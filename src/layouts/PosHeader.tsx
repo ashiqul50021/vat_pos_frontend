@@ -2,17 +2,19 @@ import React from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { openModal } from '../store/slices/modalSlice';
 import { leaveSession } from '../store/slices/counterSlice';
+import { clearCart } from '../store/slices/cartSlice';
 import { useNavigate } from '../router';
-import { 
-  FileText, 
-  Clock, 
+import {
+  FileText,
+  Clock,
   FileCheck2,
   Tv,
   User,
   ArrowLeftRight,
   LogOut,
   ChevronDown,
-  ExternalLink
+  ExternalLink,
+  Building2
 } from 'lucide-react';
 import { NexvatLogo } from '../components/common/NexvatLogo';
 
@@ -21,8 +23,10 @@ export const PosHeader: React.FC = () => {
   const navigate = useNavigate();
   const { activeCounter, session } = useAppSelector((state) => state.counter);
   const { draftOrders } = useAppSelector((state) => state.sales);
+  const branchName = (typeof window !== 'undefined' ? localStorage.getItem('branch_name') : null) || 'Main Branch';
 
   const handleSwitchCounter = () => {
+    dispatch(clearCart());
     dispatch(leaveSession());
     navigate('/counters');
   };
@@ -94,7 +98,7 @@ export const PosHeader: React.FC = () => {
           title="Return to Main ERP Dashboard"
         >
           <ExternalLink className="w-3.5 h-3.5 text-blue-600" />
-          <span className="hidden sm:inline">ERP Portal</span>
+          <span className="hidden sm:inline">VAT Portal</span>
         </a>
 
         {/* Exit Session Button */}
@@ -107,10 +111,10 @@ export const PosHeader: React.FC = () => {
           <span className="hidden sm:inline">Exit Session</span>
         </button>
 
-        {/* Screen Mode */}
-        <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
-          <Tv className="w-4 h-4 text-slate-400" />
-          <span>Semi</span>
+        {/* Branch Display */}
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200/90 text-xs text-slate-700 font-semibold shadow-2xs">
+          <Building2 className="w-3.5 h-3.5 text-blue-600" />
+          <span>{branchName}</span>
         </div>
 
         {/* User Profile */}

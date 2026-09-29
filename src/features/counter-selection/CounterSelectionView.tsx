@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { selectCounter, setFilterStatus, setCurrentView, setCounters } from '../../store/slices/counterSlice';
+import { clearCart } from '../../store/slices/cartSlice';
 import { CounterCard } from './CounterCard';
 import { CounterCardSkeleton } from './CounterCardSkeleton';
 import { Search, Monitor, Headphones, Tv, User, Building2 } from 'lucide-react';
@@ -89,6 +90,7 @@ export const CounterSelectionView: React.FC = () => {
   });
 
   const handleSelect = (counter: CounterTerminal) => {
+    dispatch(clearCart());
     dispatch(selectCounter(counter));
     navigate('/pos');
   };

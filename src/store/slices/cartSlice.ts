@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { CartItem, AppliedDiscount, CustomerInfo } from '../../types/cart.types';
 import { Product } from '../../types/product.types';
 import { calculateOrderTotals } from '../../utils/vatCalculator';
+import { leaveSession, selectCounter } from './counterSlice';
 
 interface CartState {
   items: CartItem[];
@@ -113,6 +114,29 @@ export const cartSlice = createSlice({
       state.appliedDiscount = action.payload.discount || null;
       recalculate(state);
     }
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(leaveSession, (state) => {
+        state.items = [];
+        state.appliedDiscount = null;
+        state.customer = {
+          type: 'walk-in',
+          name: 'Walk-in Customer',
+          taxId: '',
+        };
+        recalculate(state);
+      })
+      .addCase(selectCounter, (state) => {
+        state.items = [];
+        state.appliedDiscount = null;
+        state.customer = {
+          type: 'walk-in',
+          name: 'Walk-in Customer',
+          taxId: '',
+        };
+        recalculate(state);
+      });
   },
 });
 

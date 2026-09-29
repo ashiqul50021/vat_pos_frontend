@@ -56,8 +56,25 @@ export const PaymentModal: React.FC = () => {
 
   // Payment / Sales Note
   const [paymentNote, setPaymentNote] = useState<string>('');
+  const [sellerInfo, setSellerInfo] = useState<any>(null);
 
   const cashInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    posClient.getSettings().then((res) => {
+      if (res?.company) {
+        setSellerInfo({
+          registeredName: res.company.name || 'NEXVAT POS',
+          bin: res.company.bin || 'N/A',
+          address: res.company.address || 'Dhaka, Bangladesh',
+          circleName: 'Circle-04 (Gulshan)',
+          commissionerate: 'Customs, Excise & VAT Commissionerate',
+          phone: res.company.phone || '+880 2 000000',
+        });
+      }
+    }).catch(() => {});
+  }, [isOpen]);
 
   // Auto-initialize tender amount when modal opens or total changes
   useEffect(() => {
@@ -202,7 +219,7 @@ export const PaymentModal: React.FC = () => {
       issueDateTime: invoiceTimestamp,
       counterCode: activeCounter?.code || 'POS-T01',
       cashierName: session?.operatorName || (typeof window !== 'undefined' ? localStorage.getItem('user_name') : null) || 'Cashier',
-      seller: mockCompanySeller,
+      seller: sellerInfo || mockCompanySeller,
       buyer: customer,
       items: mushakItems,
       totalExclusiveAmount: subtotal,

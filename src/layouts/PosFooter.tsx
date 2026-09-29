@@ -22,7 +22,7 @@ export const PosFooter: React.FC = () => {
 
       {/* Right: Branch & Version Meta */}
       <div className="flex items-center gap-4 text-slate-500 font-mono text-[10px]">
-        <span>Branch: Dhaka Central (001)</span>
+        <span>Branch: {(typeof window !== 'undefined' ? localStorage.getItem('branch_name') : null) || 'Main Branch'}</span>
         <span>Terminal: {activeCounter?.code || 'POS-T01'}</span>
         <span className="text-slate-400">v4.2.1-PROD</span>
       </div>

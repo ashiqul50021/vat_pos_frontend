@@ -71,6 +71,14 @@ export const posClient = {
     return res.json();
   },
 
+  async getSettings() {
+    const res = await fetch(`${BASE_URL}/pos/settings`, {
+      headers: getHeaders(),
+    });
+    if (!res.ok) throw new Error(`Failed to fetch settings: ${res.statusText}`);
+    return res.json();
+  },
+
   async verifyAuth() {
     const res = await fetch(`${BASE_URL}/pos/auth/verify`, {
       headers: getHeaders(),

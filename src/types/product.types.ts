@@ -20,6 +20,7 @@ export interface Product {
   pos_category_id?: number;       // matched pos_category id
   hs_code: string;
   unitPrice: number;
+  totalPrice?: number;
   vatRate: number;
   sdRate: number;
   stock: number;

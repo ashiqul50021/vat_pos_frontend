@@ -100,14 +100,19 @@ export const ProductGridCard: React.FC<ProductGridCardProps> = ({ product, onAdd
       </div>
 
       {/* Price & Add Button */}
-      <div className="flex items-center justify-between pt-2.5 mt-1 border-t border-slate-100">
+      <div className="flex items-center justify-between pt-2 mt-1 border-t border-slate-100">
         <div>
-          <span className="text-xs font-black text-[#1E3A8A] font-mono tracking-tight">
-            {formatBDT(product.unitPrice, false)}
-          </span>
-          <span className="text-[10px] font-medium text-slate-500 font-sans ml-1">
-            BDT
-          </span>
+          <div className="flex items-baseline gap-1">
+            <span className="text-xs font-black text-[#1E3A8A] font-mono tracking-tight">
+              {formatBDT(product.totalPrice || (product.unitPrice * (1 + product.vatRate)), false)}
+            </span>
+            <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1 py-0.2 rounded border border-emerald-200/60 leading-none">
+              Incl. VAT
+            </span>
+          </div>
+          <div className="text-[10px] text-slate-500 font-mono mt-0.5">
+            Base: {formatBDT(product.unitPrice, false)} BDT
+          </div>
         </div>
 
         <button
@@ -115,7 +120,7 @@ export const ProductGridCard: React.FC<ProductGridCardProps> = ({ product, onAdd
             e.stopPropagation();
             onAdd(product);
           }}
-          className="w-6 h-6 rounded-lg border border-blue-200 bg-blue-50/80 group-hover:bg-[#1E3A8A] group-hover:text-white group-hover:border-[#1E3A8A] text-[#1E3A8A] flex items-center justify-center transition-all shadow-2xs active:scale-95"
+          className="w-7 h-7 rounded-lg border border-blue-200 bg-blue-50/80 group-hover:bg-[#1E3A8A] group-hover:text-white group-hover:border-[#1E3A8A] text-[#1E3A8A] flex items-center justify-center transition-all shadow-2xs active:scale-95 shrink-0"
           title="Add to cart"
         >
           <Plus className="w-3.5 h-3.5 stroke-[2.5]" />

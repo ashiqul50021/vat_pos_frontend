@@ -44,10 +44,8 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({ onNotify }) => {
 
   const handleVoidCart = () => {
     if (items.length === 0) return;
-    if (window.confirm('Are you sure you want to void this cart? [F8]')) {
-      dispatch(clearCart());
-      onNotify?.('Cart voided');
-    }
+    dispatch(clearCart());
+    onNotify?.('Cart voided');
   };
 
   return (
@@ -62,14 +60,14 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({ onNotify }) => {
         <span>Hold [F4]</span>
       </button>
 
-      {/* Void Cart [F8] */}
+      {/* Void Cart [F5] */}
       <button
         onClick={handleVoidCart}
         disabled={items.length === 0}
         className="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl border border-slate-200/90 bg-slate-50/80 hover:bg-rose-50 hover:border-rose-200 text-slate-700 hover:text-rose-600 text-xs font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed text-center shadow-2xs active:scale-95"
       >
         <Trash2 className="w-3.5 h-3.5 text-slate-500 hover:text-rose-500" />
-        <span>Void [F8]</span>
+        <span>Void [F5]</span>
       </button>
 
       {/* Discount feature hidden temporarily upon request - can be re-enabled anytime */}

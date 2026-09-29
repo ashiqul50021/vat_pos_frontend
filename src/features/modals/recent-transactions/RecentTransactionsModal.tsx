@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { closeModal, openModal, setActiveInvoice } from '../../../store/slices/modalSlice';
+import { setTransactions } from '../../../store/slices/salesSlice';
+import { posClient } from '../../../api/posClient';
 import { 
   Receipt, 
   Search, 
@@ -8,10 +10,10 @@ import {
   Clock, 
   FileText, 
   Printer, 
-  Eye
+  Eye,
+  Loader2
 } from 'lucide-react';
 import { formatBDT } from '../../../utils/currencyFormatter';
-import { mockSampleInvoice } from '../../../data/mockSalesHistory';
 import { Mushak63Invoice } from '../../../types/invoice.types';
 
 interface RecentTransactionItem {
@@ -33,8 +35,101 @@ export const RecentTransactionsModal: React.FC = () => {
   const isOpen = useAppSelector((state) => state.modal.isRecentTransactionsModalOpen);
   const [search, setSearch] = useState('');
   const [selectedMethod, setSelectedMethod] = useState<'all' | 'cash' | 'card' | 'mfs'>('all');
+  const [loading, setLoading] = useState(false);
 
   const dynamicTransactions = useAppSelector((state) => state.sales.transactions);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const fetchSales = async () => {
+      try {
+        setLoading(true);
+        const res = await posClient.getSalesHistory();
+        if (res?.data && Array.isArray(res.data)) {
+          const mapped = res.data.map((item: any) => {
+            const saleItems = Array.isArray(item.items) && item.items.length > 0
+              ? item.items
+              : [
+                  {
+                    serialNo: 1,
+                    productName: 'POS Sold Product',
+                    hsCode: 'N/A',
+                    unit: 'pcs',
+                    quantity: item.item_count || 1,
+                    unitPrice: Number(item.sub_total) || Number(item.total_amount),
+                    totalPriceExclusive: Number(item.sub_total) || 0,
+                    supplementaryDutyRate: 0,
+                    supplementaryDutyAmount: 0,
+                    vatRate: 0.15,
+                    vatAmount: Number(item.vat) || 0,
+                    totalPriceInclusive: Number(item.total_amount) || 0,
+                  },
+                ];
+
+            const fullInvoice: Mushak63Invoice = {
+              invoiceNumber: item.invoice_no || item.sales_code,
+              mushakChallanNo: item.challan_no || `NBR-M6.3-${item.sales_code}`,
+              sdmsCloudTxId: `SDMS-${item.sales_code}`,
+              qrVerificationUrl: `https://vat.nbr.gov.bd/sdms/verify?id=${item.sales_code}`,
+              issueDateTime: item.challan_date || 'Earlier today',
+              counterCode: item.counter_name || 'POS-T01',
+              cashierName: 'Super Admin',
+              seller: item.seller || {
+                registeredName: 'NEXVAT SUPERSTORE',
+                bin: '000000000-0000',
+                address: 'Dhaka, Bangladesh',
+                circleName: 'Circle-04 (Gulshan)',
+                commissionerate: 'Customs, Excise & VAT Commissionerate',
+                phone: '+880 2 000000',
+              },
+              buyer: {
+                type: item.user_type === 'walk_in' ? 'walk_in' : 'registered',
+                name: item.customer_name || 'Walk-In Regular Customer',
+                phone: item.customer_phone || '',
+                taxId: item.customer_tax_id || '',
+              },
+              items: saleItems,
+              totalExclusiveAmount: Number(item.sub_total) || 0,
+              totalSupplementaryDuty: Number(item.sd) || 0,
+              totalVatAmount: Number(item.vat) || 0,
+              discountAmount: 0,
+              payableGrossAmount: Number(item.total_amount) || 0,
+              amountInBengaliWords: '',
+              amountInEnglishWords: '',
+              payment: {
+                method: (item.payment_method?.toLowerCase() === 'card' ? 'card' : item.payment_method?.toLowerCase() === 'mfs' || item.payment_method?.toLowerCase() === 'bkash' ? 'mfs' : item.payment_method?.toLowerCase() === 'split' ? 'split' : 'cash') as any,
+                amountPaid: Number(item.total_amount) || 0,
+                changeGiven: 0,
+              },
+              isNbrSynced: true,
+            };
+
+            return {
+              id: String(item.id),
+              invoiceNo: item.invoice_no || item.sales_code,
+              mushakNo: item.challan_no || `NBR-M6.3-${item.sales_code}`,
+              timestamp: item.challan_date || 'Earlier today',
+              customerName: item.customer_name || 'Walk-In Regular Customer',
+              subtotal: Number(item.sub_total) || 0,
+              vatAmount: Number(item.vat) || 0,
+              discountAmount: 0,
+              grandTotal: Number(item.total_amount) || 0,
+              paymentMethod: (item.payment_method?.toLowerCase() === 'card' ? 'card' : item.payment_method?.toLowerCase() === 'mfs' || item.payment_method?.toLowerCase() === 'bkash' ? 'mfs' : item.payment_method?.toLowerCase() === 'split' ? 'split' : 'cash') as any,
+              itemCount: item.item_count || 1,
+              items: [],
+              fullInvoice,
+            };
+          });
+          dispatch(setTransactions(mapped));
+        }
+      } catch (err) {
+        console.error('Failed to fetch sales history:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSales();
+  }, [isOpen, dispatch]);
 
   const transactions: RecentTransactionItem[] = dynamicTransactions.map((tx) => ({
     id: tx.id,
@@ -96,7 +191,7 @@ export const RecentTransactionsModal: React.FC = () => {
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-bold text-slate-900">Recent Transactions</h3>
                 <span className="px-2 py-0.2 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-semibold">
-                  Today: 48
+                  Today: {transactions.length}
                 </span>
               </div>
             </div>
@@ -142,7 +237,12 @@ export const RecentTransactionsModal: React.FC = () => {
 
         {/* Transactions List */}
         <div className="p-4 overflow-y-auto space-y-2 flex-1 divide-y divide-slate-100">
-          {filtered.length === 0 ? (
+          {loading ? (
+            <div className="py-12 text-center text-slate-400">
+              <Loader2 className="w-8 h-8 mx-auto mb-2 text-blue-600 animate-spin" />
+              <p className="text-xs font-semibold text-slate-600">Loading transactions...</p>
+            </div>
+          ) : filtered.length === 0 ? (
             <div className="py-12 text-center text-slate-400">
               <Receipt className="w-8 h-8 mx-auto mb-2 text-slate-300" />
               <p className="text-xs font-semibold text-slate-600">No Transactions Found</p>
@@ -209,7 +309,7 @@ export const RecentTransactionsModal: React.FC = () => {
           <div>
             <span>Shift Sales: </span>
             <strong className="text-slate-900 font-bold font-mono">
-              82,450.00 BDT
+              {formatBDT(transactions.reduce((acc, t) => acc + t.grandTotal, 0), false)} BDT
             </strong>
           </div>
 

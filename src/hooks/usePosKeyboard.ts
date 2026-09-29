@@ -74,12 +74,10 @@ export const usePosKeyboard = () => {
           );
           dispatch(clearCart());
         }
-      } else if (e.key === 'F8') {
+      } else if (e.key === 'F5' || e.key === 'F8') {
         e.preventDefault();
         if (items.length > 0) {
-          if (window.confirm('Void current cart? [F8]')) {
-            dispatch(clearCart());
-          }
+          dispatch(clearCart());
         }
       }
     };

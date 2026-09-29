@@ -135,7 +135,7 @@ export const BarcodeScannerInput: React.FC<BarcodeScannerInputProps> = ({ onScan
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-slate-900 font-mono">
-                  {p.unitPrice.toFixed(2)} BDT
+                  {(p.totalPrice || p.unitPrice).toFixed(2)} BDT
                 </span>
                 <span className="p-1 rounded bg-blue-50 text-blue-600">
                   <Plus className="w-3.5 h-3.5" />

@@ -54,7 +54,10 @@ export const CartItemsTable: React.FC = () => {
 
                 {/* Price */}
                 <td className="py-3 px-2 text-right font-medium text-slate-700 font-mono text-xs">
-                  {formatBDT(item.product.unitPrice, false)}
+                  <div>{formatBDT(item.product.unitPrice, false)}</div>
+                  <div className="text-[10px] text-emerald-600 font-sans font-normal">
+                    Incl. VAT: {formatBDT(item.product.totalPrice || (item.product.unitPrice * (1 + item.product.vatRate)), false)}
+                  </div>
                 </td>
 
                 {/* Qty Controls */}
