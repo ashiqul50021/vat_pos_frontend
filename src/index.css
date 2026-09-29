@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #F8FAFC;
+    color: #1E293B;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Print Stylesheet for Mushak 6.3 Tax Invoice */
+@media print {
+  @page {
+    size: auto;
+    margin: 8mm;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  html, body {
+    height: auto !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Hide the entire React root with all modals, overflows and backdrops */
+  #root {
+    display: none !important;
+  }
+
+  /* Render ONLY the dedicated top-level print node attached directly to body */
+  #dedicated-print-node {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 580px !important;
+    margin: 0 auto !important;
+    padding: 16px !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+
+  #dedicated-print-node * {
+    visibility: visible !important;
+  }
+
+  .no-print,
+  .no-print * {
+    display: none !important;
+    visibility: hidden !important;
+  }
+}
