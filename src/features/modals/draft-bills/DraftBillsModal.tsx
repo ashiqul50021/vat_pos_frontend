@@ -44,10 +44,10 @@ export const DraftBillsModal: React.FC = () => {
     dispatch(closeModal('draftBills'));
   };
 
-  const handleDelete = (id: string) => {
-    if (window.confirm('Discard this held draft order?')) {
-      dispatch(removeDraftOrder(id));
-    }
+  const handleDelete = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    e.preventDefault();
+    dispatch(removeDraftOrder(id));
   };
 
   return (
@@ -154,11 +154,12 @@ export const DraftBillsModal: React.FC = () => {
 
                   <div className="flex items-center gap-1.5">
                     <button
-                      onClick={() => handleDelete(draft.id)}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                      type="button"
+                      onClick={(e) => handleDelete(e, draft.id)}
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer active:scale-95"
                       title="Delete Draft"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-3.5 h-3.5 pointer-events-none" />
                     </button>
 
                     <button

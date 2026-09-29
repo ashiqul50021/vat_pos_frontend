@@ -61,7 +61,7 @@ export const PosHeader: React.FC = () => {
           <FileText className="w-3.5 h-3.5 text-blue-600" />
           <span>Draft Bill</span>
           <span className="bg-[#2563EB] text-white text-[11px] font-bold px-1.5 py-0.5 rounded-md leading-none">
-            {draftOrders.length || 3}
+            {draftOrders.length}
           </span>
           <ChevronDown className="w-3 h-3 text-blue-500 ml-0.5" />
         </button>
